@@ -1,0 +1,27 @@
+###
+GET http://localhost:8000/document/admin/all
+
+###
+DELETE http://localhost:8000/document
+
+###
+POST http://localhost:8000/user/register
+Content-Type: application/json
+
+{
+    "username": "Jonathan",
+    "email": "john.doe@email.com",
+    "password": "101010"
+}
+
+###
+POST http://localhost:8000/user/login
+Content-Type: application/json  
+
+{
+    "username": "Jonathan",
+    "password": "101010"
+}
+
+###
+GET http://localhost:8000/user/all

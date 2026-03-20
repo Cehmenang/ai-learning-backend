@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Difficulty {
+  MUDAH
+  MENENGAH
+  SULIT
+}
+
+model User {
+  id String @id @default(uuid())
+  username String
+  email String @unique
+  password String?
+  googleId String? @unique
+  documents Document[]
+  quizzes Quiz[]
+  attempts Attempt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Document {
+  id String @id @default(uuid())
+  title String
+  fileName  String
+  content String @db.Text
+  size BigInt
+  summary String? @db.Text
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  quizzes Quiz[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Option {
+  id String @id @default(uuid())
+  text String
+  isCorrect Boolean
+  questionId String
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userAnswer UserAnswer[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Question {
+  id String @id @default(uuid())
+  text String
+  answer String
+  explanation String
+  quizId String
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options Option[]
+  difficulty Difficulty
+  userAnswer UserAnswer[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Quiz {
+  id String @id @default(uuid())
+  title String
+  userId String
+  documentId String
+  user User @relation(fields: [userId], references: [id])
+  document Document @relation(fields: [documentId], references: [id])
+  questions Question[]
+  attempts Attempt[]
+  description String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserAnswer {
+  id String @id @default(uuid())
+  attemptId String
+  questionId String
+  selectedOptionId String
+  attempt Attempt @relation(fields: [attemptId], references: [id])
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedOption Option @relation(fields: [selectedOptionId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Attempt {
+  id String @id @default(uuid())
+  userId String
+  quizId String
+  user User @relation(fields: [userId], references: [id])
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  userAnswers UserAnswer[]
+  score Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
