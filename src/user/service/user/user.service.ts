@@ -22,7 +22,7 @@ export class UserService {
 
     signToken({ username, id }: { username: string, id: string }, response: Response){
         const token = this.jwtService.sign({ id, username})
-        response.cookie('access_token', token, { httpOnly: true, secure: true, maxAge: 1000 * 3600, sameSite: 'none' })
+        response.cookie('access_token', token, { httpOnly: true, secure: true, maxAge: 1000 * 3600, sameSite: 'lax' })
         return token
     }
 
